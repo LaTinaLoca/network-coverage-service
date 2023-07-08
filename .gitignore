@@ -1,0 +1,19 @@
+# Learn more about .gitignore:
+#     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
+
+# Static Root
+static/
+media/
+
+# Python virtualenv
+venv/
+.env
+
+# Compiled Python bytecode
+*.py[cod]
+
+# Log files
+*.log
+
+# JetBrains IDE
+.idea/

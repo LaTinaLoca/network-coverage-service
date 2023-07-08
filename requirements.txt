@@ -1,0 +1,8 @@
+Django==4.1
+djangorestframework==3.14
+drf-spectacular==0.26.3
+requests==2.31.0
+pyproj==3.6.0
+python-decouple==3.8
+flake8==6.0.0
+django-extensions==3.2.3
