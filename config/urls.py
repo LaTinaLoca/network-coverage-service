@@ -19,6 +19,9 @@ from drf_spectacular.views import (
     SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 )
 
+admin.site.site_header = "Network Coverage Admin Portal"
+admin.site.index_title = "Welcome to the Network Coverage Service admin portal"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('net_coverage/', include('net_coverage.urls'))

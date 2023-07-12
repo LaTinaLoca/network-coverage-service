@@ -17,3 +17,6 @@ venv/
 
 # JetBrains IDE
 .idea/
+
+# computer-specific files
+.DS_Store
