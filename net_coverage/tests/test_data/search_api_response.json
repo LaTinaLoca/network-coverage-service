@@ -1,0 +1,28 @@
+{
+    "features": [
+    {
+        "type": "Feature",
+        "geometry":
+        {
+            "type": "Point",
+            "coordinates": [-5.089224, 48.456567]
+        },
+        "properties":
+        {
+            "label": "Ouessant",
+            "score": 0.8437672727272727,
+            "id": "29155",
+            "type": "municipality",
+            "name": "Ouessant",
+            "postcode": "29242",
+            "citycode": "29155",
+            "x": 102952.86,
+            "y": 6847974.95,
+            "population": 832,
+            "city": "Ouessant",
+            "context": "29, Finistère, Bretagne",
+            "importance": 0.28144,
+            "municipality": "Ouessant"
+        }
+    }]
+}

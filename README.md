@@ -2,13 +2,28 @@
 
 Network Coverage is a Python API service which takes care of returning the network coverage (2G/3G/4G) on the French territory 
 of the main phone providers. Providing an address in the request
-the service returns the coverage for each available provider. The coverage is provided at city-level (city_code INSEE used).
+the service returns the coverage for each available provider. 
+The coverage is provided at city-level (city_code INSEE used) so in case of multiple records in the DB for the
+same city_code and post_code (but different latitude and longitude coordinates) for the same provider then the 
+worst case scenario is considered. 
+So, for example, in case of the city Ploudalmézeau (city_code=29178 and post_code=29830), four records are present
+in the DB for Bouygues Telecom provider. Two with {2G: True, 3G: True, 4G: True} and two with {2G: True,
+3G: True, 4G: False}. The response returned by the API is then 
+{
+    "provider": "Bouygues Telecom",
+    "coverage": {
+      "two_g": true,
+      "three_g": true,
+      "four_g": false
+    }
+}
 
 Request formats:
 1) either the whole address in the format like address=52 Route de Brest post_code=29830 city_name=Ploudalmézeau
 2) or just post code and city name like post_code=29830 city_name=Ploudalmézeau
 3) or address and city name like address=52 Route de Brest city_name=Ploudalmézeau
 4) simply the post code like post_code=29830
+5) simply the city name like city_name=Ploudalmézeau
 
 ### Prerequisites
 
@@ -75,9 +90,15 @@ which ingests all the data present in net_coverage/data/2018_01_Sites_mobiles_2G
 file and stores the data coverage converting lambert93 to GPS latitude and
 longitude coordinates and adding the city code and the post code information.
 Given the size of the .csv file (~77000 rows), the script takes around 3 hours to complete
-so, alternatively, for the sake of testing the service out-of-the-box, the already populated 
+so, alternatively, for the sake of testing the service, the already populated 
 net_coverage.sqlite3 file can be used which contains all the basic Django data as well as the 
 pre-populated providers data.
+TODO: rename the sqlite3 file to _bck_net_coverage.sqlite3 in case it is not used
+and a new DB is created and populated running the populate_db_from_csv script.
+Another option is to decide how many records to ingest from the .csv file: a limited number of rows may be
+read and stored (like 1000) speeding up the DB population process. 
+In this case, naturally, the network coverage service is testable on a restricted
+geographic area only given that the DB is missing most of the coverage data across the country.
 
 ## Execution
 1. Create .env file with your environment configuration.
@@ -86,6 +107,19 @@ pre-populated providers data.
 ```bash
   python manage.py runserver
 ```
+
+## Testing
+There is a suit of unit and integration tests that can be run using
+```bash
+     python manage.py test net_coverage
+```
+The installed package [coverage](https://coverage.readthedocs.io/en/7.2.7/) helps check out the testing coverage.
+```bash
+coverage run manage.py test net_coverage
+coverage html
+```
+The last command generates an html report (under the folder ./htmlcov) that can be inspected opening the index.html file
+in a browser to navigate the project test coverage.
 
 ### Swagger API Link
 1. localhost:8000/api/v1/schema/swagger-ui/

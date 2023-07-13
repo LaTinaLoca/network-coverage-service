@@ -29,7 +29,9 @@ def data_mapping(row_data):
     data_dict["provider_mnc"] = int(row_data[int(config("PROVIDER_MNC_COLUMN_NUM"))])
     data_dict["x"] = int(row_data[int(config("PROVIDER_X_COLUMN_NUM"))])
     data_dict["y"] = int(row_data[int(config("PROVIDER_Y_COLUMN_NUM"))])
-    lat, lon = lambert93_to_gps(x=data_dict["x"], y=data_dict["y"])
+    lat, lon, err_msg = lambert93_to_gps(x=data_dict["x"], y=data_dict["y"])
+    if err_msg:
+        return dict()
     data_dict["latitude"] = round(lat, 5)
     data_dict["longitude"] = round(lon, 5)
     address, err_msg = addr_instance.get_address_from_coordinates(latitude=lat, longitude=lon)
@@ -56,9 +58,9 @@ def csv_parser_and_data_conversion(file_name=provider_csv_file_name):
     if not exists:
         logger.info(f"Error: the provided file {full_name} doesn't exist under {full_path} path")
         return
-    df = pd.read_csv(filepath_or_buffer=full_path, sep=';')
+    df = pd.read_csv(filepath_or_buffer=full_path, sep=';') #nrows=1000
     data_list = []
-    for row in tqdm(df.iloc, total=df.shape[0]):
+    for row in tqdm(df.iloc, total=df.shape[0]): #total=1000
         data_dict = data_mapping(row_data=row)
         serializer = serializer_class(data=data_dict)
         if serializer.is_valid():

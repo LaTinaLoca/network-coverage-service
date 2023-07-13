@@ -29,56 +29,29 @@ class GetNetworkCoverage(APIView):
                     "phone providers availability. The info is provided at city code precision level. "
                     "Either the post code or the city name must be " 
                     "provided with the address in the parameters otherwise an error message is returned "
-                    "(too wide search). \n"
+                    "(i.e. too wide search). \n"
                     "Request formats: \n" 
                     "1) all the address info split like address=52 Route de Brest post_code=29830 "
                     "city_name=Ploudalmézeau \n"
                     "2) just post code and city name like post_code=29830 city_name=Ploudalmézeau \n"
                     "3) address and city name like address=52 Route de Brest city_name=Ploudalmézeau \n"
-                    "4) simply the post code like post_code=29830",
+                    "4) simply the post code like post_code=29830 \n"
+                    "5) simply the city name like city_name=Ploudalmézeau",
         responses={200: serializer_class()})
     def get(self, request, *args, **kwargs):
         address = unidecode(request.GET.get("address").strip()) if request.GET.get("address") else None
         post_code = request.GET.get("post_code").strip() if request.GET.get("post_code") else None
         city_name = unidecode(request.GET.get("city_name").strip()) if request.GET.get("city_name") else None
 
-        params = dict(request.GET)
-        mandatory_param_for_calculation_opt_one = {
-            'address',
-            'post_code',
-        }
-        mandatory_param_for_calculation_opt_two = {
-            'address',
-            'city_name'
-        }
-        mandatory_param_for_calculation_opt_three = {
-            'city_name',
-            'post_code'
-        }
-        mandatory_param_for_calculation_opt_four = {
-            'post_code'
-        }
-        provided = set([i for i, j in params.items() if bool(j[-1])])
-        if provided.intersection(
-                mandatory_param_for_calculation_opt_one
-        ) != mandatory_param_for_calculation_opt_one \
-            and provided.intersection(
-                mandatory_param_for_calculation_opt_two
-        ) != mandatory_param_for_calculation_opt_two \
-            and provided.intersection(
-                mandatory_param_for_calculation_opt_three
-        ) != mandatory_param_for_calculation_opt_three \
-                and provided.intersection(
-            mandatory_param_for_calculation_opt_four
-        ) != mandatory_param_for_calculation_opt_four:
-            return Response({"details": "Missing required parameters in the request: please review it."
-                                        "Either address + post code or address + city name or just post code. "
+        if not post_code and not city_name:
+            return Response({"details": "Missing required parameters in the request: please review them. "
+                                        "At least one between post_code and city_code must be provided. "
                                         f"Params: address {address} "
                                         f"- post_code {post_code} "
                                         f"- city_name {city_name}"
                              },
                             status=400
-                          )
+                           )
         query = ""
         postcode = None
         simple_address_validation_pattern = "(\\d{1,}) [a-zA-Z0-9\\s]+"
@@ -99,8 +72,7 @@ class GetNetworkCoverage(APIView):
                 postcode = post_code
                 # using the post_code in the query parameter of the request to the gov API
                 # just in case we don't have any other info (like address or city name)
-                if provided.intersection(mandatory_param_for_calculation_opt_four) \
-                        != mandatory_param_for_calculation_opt_four:
+                if not address and not city_name:
                     query = post_code
             else:
                 return Response({"details": f"The provided post_code {post_code} doesn't respect the "
@@ -115,9 +87,6 @@ class GetNetworkCoverage(APIView):
                                             "alphabetical format like 'Paris'."},
                                 status=400
                                 )
-        #if address and bool(re.fullmatch(whole_address_validation_pattern, address)):
-        #    query = address
-
         addr_instance = AddressIngestion()
         # a list is returned in searched_address
         searched_address, err_msg = addr_instance.search_address(query=query, post_code=postcode)
@@ -135,7 +104,6 @@ class GetNetworkCoverage(APIView):
                             )
         gov_post_code, gov_city_code = addr_instance.get_postcode_citycode_from_address(
                                                                         address_from_gov_api=searched_address[0])
-
         coverage_objs = None
         if gov_city_code:
             coverage_objs = ProvidersCoverage.objects.filter(
@@ -147,9 +115,11 @@ class GetNetworkCoverage(APIView):
             elif post_code:
                 qs_code = post_code
             else:
-                return Response({"details": "There is no post_code nor city_code on which matching the phone provider coverage. "
-                                     "Please review the provided parameters and, if correct, retry later."},
-                                status=400)
+                return Response({"details":
+                                "There is no post_code nor city_code on which matching the phone provider coverage. "
+                                 "Please review the provided parameters and, if correct, retry later."},
+                                status=400
+                                )
             coverage_objs = ProvidersCoverage.objects.filter(
                 post_code=int(qs_code)
             )

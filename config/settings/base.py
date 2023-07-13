@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_extensions',
     'drf_spectacular',
-    'net_coverage'
+    'coverage', # testing tool
+    'net_coverage' # network coverage service
 ]
 
 MIDDLEWARE = [
@@ -114,7 +115,7 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Network Coverage API',
-    'DESCRIPTION': 'Phone provider coverage',
+    'DESCRIPTION': 'Network coverage of phone providers on the French territory',
     'VERSION': '1.0.0',
     # OTHER SETTINGS
 }
