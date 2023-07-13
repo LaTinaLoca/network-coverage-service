@@ -1,4 +1,4 @@
-# Network Coverage
+# Network Coverage Service
 
 Network Coverage is a Python API service which takes care of returning the network coverage (2G/3G/4G) on the French territory 
 of the main phone providers. Providing an address in the request
@@ -9,6 +9,7 @@ worst case scenario is considered.
 So, for example, in case of the city Ploudalmézeau (city_code=29178 and post_code=29830), four records are present
 in the DB for Bouygues Telecom provider. Two with {2G: True, 3G: True, 4G: True} and two with {2G: True,
 3G: True, 4G: False}. The response returned by the API is then 
+```json
 {
     "provider": "Bouygues Telecom",
     "coverage": {
@@ -17,6 +18,11 @@ in the DB for Bouygues Telecom provider. Two with {2G: True, 3G: True, 4G: True}
       "four_g": false
     }
 }
+```
+
+Example of request to the API service:
+
+GET http://127.0.0.1:8000/net_coverage/api/v1/get-network-coverage/?city_name=Ploudalmézeau
 
 Request formats:
 1) either the whole address in the format like address=52 Route de Brest post_code=29830 city_name=Ploudalmézeau
@@ -25,6 +31,43 @@ Request formats:
 4) simply the post code like post_code=29830
 5) simply the city name like city_name=Ploudalmézeau
 
+Example of response:
+```json
+[
+  {
+    "provider": "Bouygues Telecom",
+    "coverage": {
+      "two_g": true,
+      "three_g": true,
+      "four_g": false
+    }
+  },
+  {
+    "provider": "SFR",
+    "coverage": {
+      "two_g": true,
+      "three_g": true,
+      "four_g": false
+    }
+  },
+  {
+    "provider": "Free mobile",
+    "coverage": {
+      "two_g": false,
+      "three_g": true,
+      "four_g": false
+    }
+  },
+  {
+    "provider": "Orange",
+    "coverage": {
+      "two_g": true,
+      "three_g": true,
+      "four_g": true
+    }
+  }
+]
+```
 ### Prerequisites
 
 You need the following programs installed on your computer:

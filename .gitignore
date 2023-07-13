@@ -20,3 +20,6 @@ venv/
 
 # computer-specific files
 .DS_Store
+
+# testing coverage generated file
+.coverage
