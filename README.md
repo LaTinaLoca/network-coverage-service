@@ -22,7 +22,7 @@ in the DB for Bouygues Telecom provider. Two with {2G: True, 3G: True, 4G: True}
 
 Example of request to the API service:
 
-GET http://127.0.0.1:8000/net_coverage/api/v1/get-network-coverage/?city_name=Ploudalmézeau
+GET localhost:8000/net_coverage/api/v1/get-network-coverage/?city_name=Ploudalmézeau
 
 Request formats:
 1) either the whole address in the format like address=52 Route de Brest post_code=29830 city_name=Ploudalmézeau
@@ -117,6 +117,8 @@ flake8 and django-extensions packages are optional (the latter for shell_plus av
 ```bash
 python manage.py createsuperuser
 ```
+These credenatials can be used to access Django Admin Portal at localhost:8000/admin when
+the local server is up and running.
 2. Run the migrations to create the basic Django tables 
 ```bash
 python manage.py migrate
@@ -144,15 +146,18 @@ In this case, naturally, the network coverage service is testable on a restricte
 geographic area only given that the DB is missing most of the coverage data across the country.
 
 ## Execution
-1. Create .env file with your environment configuration.
-
-2. Run a local server with:
+1. Create .env file with your environment configuration (a .env-example file is provided).
+2. Get all the static files for the Django Admin Portal
+```bash
+  python manage.py collectstatic
+```
+3. Run a local server with:
 ```bash
   python manage.py runserver
 ```
 
 ## Testing
-There is a suit of unit and integration tests that can be run using
+There is a suite of unit and integration tests that can be run using
 ```bash
      python manage.py test net_coverage
 ```
@@ -167,3 +172,6 @@ in a browser to navigate the project test coverage.
 ### Swagger API Link
 1. localhost:8000/api/v1/schema/swagger-ui/
 2. localhost:8000/api/v1/schema/redoc/
+
+### Network Coverage Service Django Admin Portal
+1. localhost:8000/admin

@@ -26,7 +26,7 @@ class GetNetworkCoverage(APIView):
                              required=False, type=str),
         ], summary="Get network coverage for an address (at city code level)",
         description="It returns the network coverage (2G/3G/4G) of a given address based on the "
-                    "phone providers availability. The info is provided at city code precision level. "
+                    "phone providers availability. "
                     "Either the post code or the city name must be " 
                     "provided with the address in the parameters otherwise an error message is returned "
                     "(i.e. too wide search). \n"
